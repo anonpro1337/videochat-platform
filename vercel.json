@@ -10,5 +10,6 @@
   "buildCommand": "cd ../.. && pnpm --filter @videochat/web build",
   "outputDirectory": ".next",
   "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
+  "nodeVersion": "20.x",
   "rootDirectory": "apps/web"
 }
