@@ -7,8 +7,8 @@
     }
   },
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm install --no-frozen-lockfile && pnpm --filter @videochat/web build",
+  "buildCommand": "pnpm --filter @videochat/web build",
   "outputDirectory": ".next",
-  "installCommand": null,
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "rootDirectory": "apps/web"
 }
