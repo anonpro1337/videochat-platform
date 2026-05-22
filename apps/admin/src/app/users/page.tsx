@@ -8,6 +8,7 @@ import {
   UserSwitch,
   DotsThreeVertical,
   CaretDown,
+  Users,
 } from '@phosphor-icons/react';
 
 interface User {
