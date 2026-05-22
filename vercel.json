@@ -1,14 +1,22 @@
 {
   "installCommand": "pnpm install --no-frozen-lockfile",
-  "nodeVersion": "20.x",
+  "framework": "services",
+  "buildCommand": "cd apps/web && npx next build",
+  "outputDirectory": "apps/web/.next",
   "builds": [
     {
       "src": "apps/web/package.json",
-      "use": "@vercel/next"
+      "use": "@vercel/next",
+      "config": {
+        "installCommand": "pnpm install --no-frozen-lockfile"
+      }
     },
     {
       "src": "api/index.ts",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "installCommand": "pnpm install --no-frozen-lockfile"
+      }
     }
   ],
   "routes": [
