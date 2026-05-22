@@ -18,3 +18,4 @@ expo/
 *.mobileprovision
 *.orig.*
 supabase/.temp/
+.vercel

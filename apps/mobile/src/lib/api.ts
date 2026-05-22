@@ -29,10 +29,4 @@ api.interceptors.response.use(
   }
 );
 
-export const socketConfig = {
-  url: process.env.EXPO_PUBLIC_SOCKET_URL || "http://localhost:3001",
-  options: {
-    transports: ["websocket"],
-    autoConnect: false,
-  },
-};
+

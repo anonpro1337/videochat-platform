@@ -57,13 +57,9 @@ const envSchema = z.object({
   // reCAPTCHA
   RECAPTCHA_SECRET_KEY: z.string(),
 
-  // Socket.IO
-  SOCKET_CORS_ORIGIN: z.string().default('*'),
-
   // Client URLs
   WEB_APP_URL: z.string(),
   API_URL: z.string(),
-  SOCKET_URL: z.string(),
 
   // Hive Moderation
   HIVE_API_KEY: z.string().optional(),
@@ -148,13 +144,9 @@ export const config = {
   recaptcha: {
     secretKey: env.RECAPTCHA_SECRET_KEY,
   },
-  socket: {
-    corsOrigin: env.SOCKET_CORS_ORIGIN,
-  },
   urls: {
     web: env.WEB_APP_URL,
     api: env.API_URL,
-    socket: env.SOCKET_URL,
   },
   moderation: {
     hiveApiKey: env.HIVE_API_KEY,

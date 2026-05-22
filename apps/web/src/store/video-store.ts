@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import { getSocket } from '@/lib/api';
+import { realtime } from '@/lib/realtime';
 
 interface VideoState {
   isConnected: boolean;
@@ -17,6 +17,15 @@ interface VideoState {
   setSearching: (val: boolean) => void;
 }
 
+function sendSignal(type: string, state: VideoState) {
+  if (!state.partnerId || !state.matchId) return;
+  realtime.broadcast(`match:${state.matchId}`, 'signal:send', {
+    type,
+    targetUserId: state.partnerId,
+    matchId: state.matchId,
+  });
+}
+
 export const useVideoStore = create<VideoState>((set, get) => ({
   isConnected: false,
   isMuted: false,
@@ -30,27 +39,13 @@ export const useVideoStore = create<VideoState>((set, get) => ({
   toggleMute: () => {
     const newVal = !get().isMuted;
     set({ isMuted: newVal });
-    const socket = getSocket();
-    if (socket && get().partnerId) {
-      socket.emit('signal:send', {
-        type: newVal ? 'mute' : 'unmute',
-        targetUserId: get().partnerId,
-        matchId: get().matchId,
-      });
-    }
+    sendSignal(newVal ? 'mute' : 'unmute', get());
   },
 
   toggleCamera: () => {
     const newVal = !get().isCameraOff;
     set({ isCameraOff: newVal });
-    const socket = getSocket();
-    if (socket && get().partnerId) {
-      socket.emit('signal:send', {
-        type: newVal ? 'camera-off' : 'camera-on',
-        targetUserId: get().partnerId,
-        matchId: get().matchId,
-      });
-    }
+    sendSignal(newVal ? 'camera-off' : 'camera-on', get());
   },
 
   setPartner: (partnerId, matchId) => set({ partnerId, matchId, isConnected: !!partnerId }),

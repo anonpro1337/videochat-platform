@@ -1,15 +1,18 @@
 {
-  "git": {
-    "deploymentEnabled": {
-      "apps/api": false,
-      "apps/mobile": false,
-      "apps/admin": false
-    }
-  },
-  "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm --filter @videochat/web build",
-  "outputDirectory": ".next",
-  "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "nodeVersion": "20.x",
-  "rootDirectory": "apps/web"
+  "builds": [
+    {
+      "src": "apps/web/package.json",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "api/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "api/index.ts" },
+    { "src": "/(.*)", "dest": "apps/web/$1" }
+  ]
 }

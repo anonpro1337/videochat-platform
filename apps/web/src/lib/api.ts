@@ -1,10 +1,8 @@
 'use client';
 
 import axios from 'axios';
-import { io, Socket } from 'socket.io-client';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4001';
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -46,25 +44,4 @@ api.interceptors.response.use(
   },
 );
 
-let socket: Socket | null = null;
-
-export function getSocket(): Socket {
-  if (!socket) {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : '';
-    socket = io(SOCKET_URL, {
-      auth: { token },
-      transports: ['websocket'],
-      reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
-    });
-  }
-  return socket;
-}
-
-export function disconnectSocket() {
-  if (socket) {
-    socket.disconnect();
-    socket = null;
-  }
-}
+export { realtime } from './realtime';
