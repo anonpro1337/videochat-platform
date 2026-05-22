@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/store/auth-store';
+import { supabase } from '@/lib/supabase';
 import {
   Envelope, Lock, User, Eye, EyeSlash, GoogleLogo,
   AppleLogo, GithubLogo, Sparkle, ArrowRight, CheckCircle
@@ -158,14 +159,15 @@ export default function AuthPage() {
           {/* Social Buttons */}
           <div className="grid grid-cols-3 gap-3 mb-6">
             {[
-              { icon: GoogleLogo, label: 'Google' },
-              { icon: AppleLogo, label: 'Apple' },
-              { icon: GithubLogo, label: 'GitHub' },
+              { icon: GoogleLogo, label: 'Google', provider: 'google' as const },
+              { icon: AppleLogo, label: 'Apple', provider: 'apple' as const },
+              { icon: GithubLogo, label: 'GitHub', provider: 'github' as const },
             ].map((s) => {
               const Icon = s.icon;
               return (
                 <button
                   key={s.label}
+                  onClick={() => supabase.auth.signInWithOAuth({ provider: s.provider })}
                   className="flex items-center justify-center gap-2 py-3 rounded-xl glass hover:bg-white/10 transition-all text-sm font-medium"
                 >
                   <Icon className="w-5 h-5" weight="fill" />

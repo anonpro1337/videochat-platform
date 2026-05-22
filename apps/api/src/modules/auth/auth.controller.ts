@@ -18,7 +18,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login with Firebase token' })
+  @ApiOperation({ summary: 'Login with Supabase token or email/password' })
   async login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }

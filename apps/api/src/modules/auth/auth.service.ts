@@ -2,10 +2,10 @@ import { Injectable, UnauthorizedException, ConflictException, Logger } from '@n
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../config/prisma.service';
 import { RedisService } from '../../config/redis.service';
+import { SupabaseService } from '../../config/supabase.service';
 import { RegisterDto, LoginDto, UpdateProfileDto } from './dto/auth.dto';
 import { config } from '@videochat/config';
 import { v4 as uuidv4 } from 'uuid';
-import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -15,9 +15,22 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private redis: RedisService,
+    private supabase: SupabaseService,
   ) {}
 
   async register(dto: RegisterDto) {
+    let supabaseUid: string;
+
+    if (dto.supabaseToken) {
+      const { data: { user: supabaseUser }, error } = await this.supabase.admin.auth.getUser(dto.supabaseToken);
+      if (error || !supabaseUser) {
+        throw new UnauthorizedException('Invalid Supabase token');
+      }
+      supabaseUid = supabaseUser.id;
+    } else {
+      supabaseUid = uuidv4();
+    }
+
     const existing = await this.prisma.user.findFirst({
       where: {
         OR: [
@@ -36,11 +49,9 @@ export class AuthService {
       }
     }
 
-    const firebaseUid = dto.firebaseToken || uuidv4();
-
     const user = await this.prisma.user.create({
       data: {
-        firebaseUid,
+        supabaseUid,
         email: dto.email,
         phone: dto.phone,
         displayName: dto.displayName,
@@ -78,9 +89,29 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    // Verify Firebase token or find user by device
-    const user = await this.prisma.user.findFirst({
-      where: { firebaseUid: dto.firebaseToken },
+    let supabaseUid: string;
+
+    if (dto.supabaseToken) {
+      const { data: { user: supabaseUser }, error } = await this.supabase.admin.auth.getUser(dto.supabaseToken);
+      if (error || !supabaseUser) {
+        throw new UnauthorizedException('Invalid Supabase token');
+      }
+      supabaseUid = supabaseUser.id;
+    } else if (dto.email && dto.password) {
+      const { data: { user: supabaseUser }, error } = await this.supabase.admin.auth.signInWithPassword({
+        email: dto.email,
+        password: dto.password,
+      });
+      if (error || !supabaseUser) {
+        throw new UnauthorizedException('Invalid email or password');
+      }
+      supabaseUid = supabaseUser.id;
+    } else {
+      throw new UnauthorizedException('Provide either supabaseToken or email/password');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { supabaseUid },
       include: { profile: true, settings: true },
     });
 
@@ -92,13 +123,13 @@ export class AuthService {
       throw new UnauthorizedException('Account is suspended');
     }
 
-    // Update status
     await this.prisma.user.update({
       where: { id: user.id },
       data: {
         status: 'ONLINE',
         lastActive: new Date(),
         deviceId: dto.deviceId || user.deviceId,
+        email: dto.email || user.email,
       },
     });
 
@@ -114,11 +145,11 @@ export class AuthService {
 
   async guestLogin(deviceId?: string) {
     const guestId = `guest_${uuidv4().substring(0, 8)}`;
-    const firebaseUid = `guest_${uuidv4()}`;
+    const supabaseUid = `guest_${uuidv4()}`;
 
     const user = await this.prisma.user.create({
       data: {
-        firebaseUid,
+        supabaseUid,
         displayName: `User_${guestId.substring(6)}`,
         username: guestId,
         isAnonymous: true,

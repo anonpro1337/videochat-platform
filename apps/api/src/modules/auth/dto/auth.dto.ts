@@ -30,7 +30,7 @@ export class RegisterDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  firebaseToken?: string;
+  supabaseToken?: string;
 
   @ApiProperty({ required: false })
   @IsString()
@@ -39,9 +39,20 @@ export class RegisterDto {
 }
 
 export class LoginDto {
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
-  firebaseToken: string;
+  @IsOptional()
+  supabaseToken?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  email?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  password?: string;
 
   @ApiProperty({ required: false })
   @IsString()

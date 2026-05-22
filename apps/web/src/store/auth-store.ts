@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { api } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 
 interface User {
   id: string;
@@ -44,19 +45,23 @@ export const useAuthStore = create<AuthState>()(
       login: async (email, password) => {
         set({ isLoading: true, error: null });
         try {
-          const { data } = await api.post('/auth/login', { email, password });
+          const { data: supabaseData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+          if (authError) throw new Error(authError.message);
+          const supabaseToken = supabaseData.session?.access_token;
+          const { data } = await api.post('/auth/login', { supabaseToken, email, deviceId: localStorage.getItem('deviceId') });
           localStorage.setItem('accessToken', data.data.accessToken);
           localStorage.setItem('refreshToken', data.data.refreshToken);
           set({ user: data.data.user, isAuthenticated: true, isLoading: false });
         } catch (err: any) {
-          set({ error: err?.response?.data?.message || 'Login failed', isLoading: false });
+          set({ error: err?.response?.data?.message || err.message || 'Login failed', isLoading: false });
         }
       },
 
       guestLogin: async () => {
         set({ isLoading: true, error: null });
         try {
-          const { data } = await api.post('/auth/guest');
+          const { data: { session } } = await supabase.auth.signInAnonymously();
+          const { data } = await api.post('/auth/guest', { deviceId: localStorage.getItem('deviceId') });
           localStorage.setItem('accessToken', data.data.accessToken);
           localStorage.setItem('refreshToken', data.data.refreshToken);
           set({ user: data.data.user, isAuthenticated: true, isLoading: false });
@@ -68,12 +73,26 @@ export const useAuthStore = create<AuthState>()(
       register: async (email, password, displayName) => {
         set({ isLoading: true, error: null });
         try {
-          const { data } = await api.post('/auth/register', { email, password, displayName });
+          const { data: supabaseData, error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: { data: { displayName } },
+          });
+          if (authError) throw new Error(authError.message);
+          const supabaseToken = supabaseData.session?.access_token;
+          const username = email.split('@')[0] + '_' + Math.random().toString(36).slice(2, 6);
+          const { data } = await api.post('/auth/register', {
+            supabaseToken,
+            email,
+            displayName,
+            username,
+            deviceId: localStorage.getItem('deviceId'),
+          });
           localStorage.setItem('accessToken', data.data.accessToken);
           localStorage.setItem('refreshToken', data.data.refreshToken);
           set({ user: data.data.user, isAuthenticated: true, isLoading: false });
         } catch (err: any) {
-          set({ error: err?.response?.data?.message || 'Registration failed', isLoading: false });
+          set({ error: err?.response?.data?.message || err.message || 'Registration failed', isLoading: false });
         }
       },
 

@@ -1,0 +1,14 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "apps/api": false,
+      "apps/mobile": false,
+      "apps/admin": false
+    }
+  },
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && pnpm install --no-frozen-lockfile && pnpm --filter @videochat/web build",
+  "outputDirectory": ".next",
+  "installCommand": null,
+  "rootDirectory": "apps/web"
+}

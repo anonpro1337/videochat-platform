@@ -21,10 +21,10 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
 
-  // Firebase
-  FIREBASE_PROJECT_ID: z.string(),
-  FIREBASE_PRIVATE_KEY: z.string(),
-  FIREBASE_CLIENT_EMAIL: z.string(),
+  // Supabase
+  SUPABASE_URL: z.string(),
+  SUPABASE_ANON_KEY: z.string(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string(),
 
   // Agora (WebRTC)
   AGORA_APP_ID: z.string(),
@@ -105,10 +105,10 @@ export const config = {
     expiresIn: env.JWT_EXPIRES_IN,
     refreshExpiresIn: env.JWT_REFRESH_EXPIRES_IN,
   },
-  firebase: {
-    projectId: env.FIREBASE_PROJECT_ID,
-    privateKey: env.FIREBASE_PRIVATE_KEY,
-    clientEmail: env.FIREBASE_CLIENT_EMAIL,
+  supabase: {
+    url: env.SUPABASE_URL,
+    anonKey: env.SUPABASE_ANON_KEY,
+    serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
   },
   agora: {
     appId: env.AGORA_APP_ID,

@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bull';
 import { PrismaModule } from './config/prisma.module';
 import { RedisModule } from './config/redis.module';
+import { SupabaseModule } from './config/supabase.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { MatchingModule } from './modules/matching/matching.module';
@@ -47,6 +48,7 @@ import { config } from '@videochat/config';
     // Internal modules
     PrismaModule,
     RedisModule,
+    SupabaseModule,
     AuthModule,
     UserModule,
     MatchingModule,
