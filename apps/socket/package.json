@@ -1,0 +1,26 @@
+{
+  "name": "@videochat/socket",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "ts-node src/main.ts",
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@videochat/config": "workspace:*",
+    "@videochat/types": "workspace:*",
+    "@videochat/utils": "workspace:*",
+    "socket.io": "^4.7.0",
+    "socket.io-redis": "^6.1.0",
+    "ioredis": "^5.4.0",
+    "jsonwebtoken": "^9.0.0",
+    "agora-access-token": "^2.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0",
+    "ts-node": "^10.9.0"
+  }
+}

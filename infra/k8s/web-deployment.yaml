@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: videochat-web
+  namespace: videochat
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: videochat-web
+  template:
+    metadata:
+      labels:
+        app: videochat-web
+    spec:
+      containers:
+        - name: web
+          image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/videochat-web:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: videochat-config
+            - secretRef:
+                name: videochat-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: videochat-web
+  namespace: videochat
+spec:
+  selector:
+    app: videochat-web
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: ClusterIP

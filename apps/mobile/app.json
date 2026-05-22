@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "ChatVibe",
+    "slug": "chatvibe",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "chatvibe",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0a0f"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.chatvibe.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "ChatVibe needs camera access for video calls",
+        "NSMicrophoneUsageDescription": "ChatVibe needs microphone access for video calls"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#0a0a0f"
+      },
+      "package": "com.chatvibe.mobile",
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-camera",
+      "expo-av",
+      "expo-notifications"
+    ]
+  }
+}

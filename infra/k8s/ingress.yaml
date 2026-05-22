@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: videochat-ingress
+  namespace: videochat
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/websocket-services: "videochat-socket"
+spec:
+  tls:
+    - hosts:
+        - chatvibe.app
+      secretName: chatvibe-tls
+  rules:
+    - host: chatvibe.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: videochat-web
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: videochat-api
+                port:
+                  number: 4000
+          - path: /socket.io
+            pathType: Prefix
+            backend:
+              service:
+                name: videochat-socket
+                port:
+                  number: 4001

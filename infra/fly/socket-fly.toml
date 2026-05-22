@@ -1,0 +1,43 @@
+# Fly.io deployment config for Socket.IO Signaling Server
+app = "chatvibe-socket"
+primary_region = "bom"
+
+[build]
+  dockerfile = "apps/socket/Dockerfile"
+
+[http_service]
+  internal_port = 4001
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  concurrency = { type = "connections", hard_limit = 500, soft_limit = 300 }
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
+
+[env]
+  NODE_ENV = "production"
+  PORT = "4001"
+  SOCKET_CORS_ORIGIN = "https://chatvibe-web.fly.dev"
+  REDIS_URL = "redis://default:secure_redis_password@chatvibe-redis.fly.dev:6379"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 4001
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.concurrency]]
+    type = "connections"
+    hard_limit = 500
+    soft_limit = 300

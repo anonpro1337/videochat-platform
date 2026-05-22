@@ -1,0 +1,29 @@
+{
+  "name": "videochat-platform",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "clean": "turbo clean",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:generate": "pnpm --filter @videochat/api db:generate",
+    "db:push": "pnpm --filter @videochat/api db:push",
+    "db:migrate": "pnpm --filter @videochat/api db:migrate",
+    "db:seed": "pnpm --filter @videochat/api db:seed"
+  },
+  "devDependencies": {
+    "@turbo/gen": "^2.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.2.0",
+    "prettier-plugin-tailwindcss": "^0.6.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.1.0"
+}
