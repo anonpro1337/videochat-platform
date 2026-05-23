@@ -25,27 +25,24 @@ import { config } from '@videochat/config';
 
 @Module({
   imports: [
-    // Rate limiting
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
         limit: 100,
       },
     ]),
-
-    // Scheduling
     ScheduleModule.forRoot(),
-
-    // Queue
-    BullModule.forRoot({
-      redis: {
-        host: new URL(config.redis.url).hostname,
-        port: parseInt(new URL(config.redis.url).port || '6379'),
-        password: config.redis.password,
-      },
-    }),
-
-    // Internal modules
+    ...(config.redis.url
+      ? [
+          BullModule.forRoot({
+            redis: {
+              host: new URL(config.redis.url).hostname,
+              port: parseInt(new URL(config.redis.url).port || '6379'),
+              password: config.redis.password,
+            },
+          }),
+        ]
+      : []),
     PrismaModule,
     RedisModule,
     SupabaseModule,

@@ -12,7 +12,7 @@ const envSchema = z.object({
 
   // Database
   DATABASE_URL: z.string(),
-  REDIS_URL: z.string(),
+  REDIS_URL: z.string().optional().default(''),
   REDIS_PASSWORD: z.string().optional(),
 
   // JWT
@@ -27,35 +27,35 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string(),
 
   // Agora (WebRTC)
-  AGORA_APP_ID: z.string(),
-  AGORA_APP_CERTIFICATE: z.string(),
+  AGORA_APP_ID: z.string().optional().default(''),
+  AGORA_APP_CERTIFICATE: z.string().optional().default(''),
 
   // OpenAI
-  OPENAI_API_KEY: z.string(),
+  OPENAI_API_KEY: z.string().optional().default(''),
 
   // Stripe
-  STRIPE_SECRET_KEY: z.string(),
-  STRIPE_WEBHOOK_SECRET: z.string(),
+  STRIPE_SECRET_KEY: z.string().optional().default(''),
+  STRIPE_WEBHOOK_SECRET: z.string().optional().default(''),
 
   // Razorpay
-  RAZORPAY_KEY_ID: z.string(),
-  RAZORPAY_KEY_SECRET: z.string(),
+  RAZORPAY_KEY_ID: z.string().optional().default(''),
+  RAZORPAY_KEY_SECRET: z.string().optional().default(''),
 
   // AWS
-  AWS_ACCESS_KEY_ID: z.string(),
-  AWS_SECRET_ACCESS_KEY: z.string(),
+  AWS_ACCESS_KEY_ID: z.string().optional().default(''),
+  AWS_SECRET_ACCESS_KEY: z.string().optional().default(''),
   AWS_REGION: z.string().default('us-east-1'),
-  AWS_S3_BUCKET: z.string(),
+  AWS_S3_BUCKET: z.string().optional().default(''),
 
   // PostHog
   POSTHOG_API_KEY: z.string().optional(),
   POSTHOG_HOST: z.string().optional(),
 
   // FingerprintJS
-  FINGERPRINTJS_API_KEY: z.string(),
+  FINGERPRINTJS_API_KEY: z.string().optional().default(''),
 
   // reCAPTCHA
-  RECAPTCHA_SECRET_KEY: z.string(),
+  RECAPTCHA_SECRET_KEY: z.string().optional().default(''),
 
   // Client URLs
   WEB_APP_URL: z.string(),

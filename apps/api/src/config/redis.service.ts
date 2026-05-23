@@ -7,12 +7,18 @@ export class RedisService extends Redis implements OnModuleDestroy {
   private readonly logger = new Logger(RedisService.name);
 
   constructor() {
-    super(config.redis.url, {
+    const redisUrl = config.redis.url || undefined;
+    super(redisUrl, {
       password: config.redis.password,
       retryStrategy: (times) => Math.min(times * 50, 2000),
       maxRetriesPerRequest: 3,
       lazyConnect: true,
     });
+
+    if (!config.redis.url) {
+      this.logger.warn('Redis URL not configured - running without Redis');
+      return;
+    }
 
     this.on('connect', () => this.logger.log('Redis connected'));
     this.on('error', (err) => this.logger.error('Redis error', err));
@@ -21,6 +27,8 @@ export class RedisService extends Redis implements OnModuleDestroy {
   }
 
   async onModuleDestroy() {
-    await this.quit();
+    if (config.redis.url) {
+      await this.quit();
+    }
   }
 }
