@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { config } from '@videochat/config';
+import WebSocket from 'ws';
 
 @Injectable()
 export class SupabaseService {
@@ -12,6 +13,9 @@ export class SupabaseService {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
+      },
+      realtime: {
+        transport: WebSocket,
       },
     });
     this.logger.log('Supabase admin client initialized');

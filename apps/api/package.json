@@ -57,6 +57,7 @@
     "stripe": "^16.2.0",
     "swagger-ui-express": "^5.0.0",
     "uuid": "^14.0.0",
+    "ws": "^8.21.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
@@ -70,6 +71,7 @@
     "@types/node": "^20.14.0",
     "@types/passport-jwt": "^4.0.1",
     "@types/uuid": "^11.0.0",
+    "@types/ws": "^8.18.1",
     "jest": "^29.7.0",
     "prisma": "^5.17.0",
     "ts-jest": "^29.2.0",
