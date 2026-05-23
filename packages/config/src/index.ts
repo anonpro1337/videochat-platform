@@ -60,6 +60,7 @@ const envSchema = z.object({
   // Client URLs
   WEB_APP_URL: z.string(),
   API_URL: z.string(),
+  SOCKET_CORS_ORIGIN: z.string().default('*'),
 
   // Hive Moderation
   HIVE_API_KEY: z.string().optional(),
@@ -157,5 +158,8 @@ export const config = {
   },
   sentry: {
     dsn: env.SENTRY_DSN,
+  },
+  socket: {
+    corsOrigin: env.SOCKET_CORS_ORIGIN,
   },
 } as const;

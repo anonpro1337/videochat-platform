@@ -211,7 +211,9 @@ export class SocketServer {
       socket.on('disconnect', () => {
         console.log(`User disconnected: ${socket.userId} (${socket.id})`);
         this.io.emit('user:offline', { userId: socket.userId });
-        this.updateUserStatus(socket.userId, 'offline');
+        if (socket.userId) {
+          this.updateUserStatus(socket.userId, 'offline');
+        }
       });
     });
   }
