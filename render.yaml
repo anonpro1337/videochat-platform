@@ -7,6 +7,7 @@ services:
     rootDir: apps/api
     buildCommand: pnpm install --no-frozen-lockfile && pnpm --filter @videochat/api build
     startCommand: pnpm --filter @videochat/api start:prod
+    healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV
         value: production
@@ -29,4 +30,44 @@ services:
       - key: API_URL
         sync: false
       - key: SOCKET_URL
+        sync: false
+      - key: SOCKET_CORS_ORIGIN
+        sync: false
+      - key: AGORA_APP_ID
+        sync: false
+      - key: AGORA_APP_CERTIFICATE
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_S3_BUCKET
+        sync: false
+
+  - type: web
+    name: videochat-socket
+    runtime: node
+    repo: https://github.com/anonpro1337/videochat-platform
+    branch: main
+    rootDir: apps/socket
+    buildCommand: pnpm install --no-frozen-lockfile && pnpm --filter @videochat/socket build
+    startCommand: pnpm --filter @videochat/socket start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_URL
+        sync: false
+      - key: SOCKET_CORS_ORIGIN
         sync: false
