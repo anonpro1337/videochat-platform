@@ -1,19 +1,7 @@
 {
   "installCommand": "pnpm install --no-frozen-lockfile",
   "nodeVersion": "20.x",
-  "framework": "monorepo",
-  "buildCommand": "pnpm build",
-  "outputDirectory": "apps/web/.next",
-  "experimentalServices": {
-    "web": {
-      "framework": "nextjs",
-      "entrypoint": "apps/web",
-      "routePrefix": "/"
-    },
-    "admin": {
-      "framework": "nextjs",
-      "entrypoint": "apps/admin",
-      "routePrefix": "/admin"
-    }
-  }
+  "framework": "nextjs",
+  "buildCommand": "cd apps/web && pnpm build",
+  "outputDirectory": "apps/web/.next"
 }
