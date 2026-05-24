@@ -4,13 +4,6 @@
   "framework": "monorepo",
   "buildCommand": "pnpm build",
   "outputDirectory": "apps/web/.next",
-  "env": {
-    "NEXT_PUBLIC_API_URL": "https://vibechat-api.run.app/api/v1",
-    "NEXT_PUBLIC_SOCKET_URL": "https://vibechat-socket.run.app",
-    "NEXT_PUBLIC_SUPABASE_URL": "https://lyprfdnhcrrumyxqbshd.supabase.co",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_BkHBSLfW3DOAM6q8wk_Bow_paNwEG43",
-    "NEXT_PUBLIC_AGORA_APP_ID": "247da23abe3c4910b78239cc54b91e90"
-  },
   "experimentalServices": {
     "web": {
       "framework": "nextjs",
