@@ -58,8 +58,8 @@ const envSchema = z.object({
   RECAPTCHA_SECRET_KEY: z.string().optional().default(''),
 
   // Client URLs
-  WEB_APP_URL: z.string(),
-  API_URL: z.string(),
+  WEB_APP_URL: z.string().optional().default(''),
+  API_URL: z.string().optional().default(''),
   SOCKET_CORS_ORIGIN: z.string().default('*'),
 
   // Hive Moderation
