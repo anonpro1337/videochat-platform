@@ -15,7 +15,7 @@ export class SupabaseService {
         persistSession: false,
       },
       realtime: {
-        transport: WebSocket,
+        transport: WebSocket as any,
       },
     });
     this.logger.log('Supabase admin client initialized');
