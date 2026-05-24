@@ -7,8 +7,7 @@ export class RedisService extends Redis implements OnModuleDestroy {
   private readonly logger = new Logger(RedisService.name);
 
   constructor() {
-    const redisUrl = config.redis.url || undefined;
-    super(redisUrl, {
+    super(config.redis.url || '', {
       password: config.redis.password,
       retryStrategy: (times) => Math.min(times * 50, 2000),
       maxRetriesPerRequest: 3,
