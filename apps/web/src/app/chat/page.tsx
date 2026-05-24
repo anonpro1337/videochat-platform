@@ -8,22 +8,6 @@ import {
   CheckCircle, ArrowLeft, ChatCircle
 } from '@phosphor-icons/react';
 
-const conversations = [
-  { id: 1, name: 'Sarah', avatar: 'S', lastMsg: 'That was so fun! Let\'s call again 🎉', time: '2m', online: true, unread: 2 },
-  { id: 2, name: 'Mike', avatar: 'M', lastMsg: 'Hey, are you free later?', time: '15m', online: true, unread: 0 },
-  { id: 3, name: 'Emma', avatar: 'E', lastMsg: 'I love that song too!', time: '1h', online: false, unread: 1 },
-  { id: 4, name: 'Alex', avatar: 'A', lastMsg: 'Nice meeting you!', time: '2h', online: true, unread: 0 },
-  { id: 5, name: 'Luna', avatar: 'L', lastMsg: 'Haha good one 😂', time: '3h', online: false, unread: 0 },
-];
-
-const messages = [
-  { id: 1, sender: 'them', text: 'Hey! How are you?', time: '10:30 AM' },
-  { id: 2, sender: 'me', text: 'I\'m great! Just joined ChatVibe', time: '10:31 AM' },
-  { id: 3, sender: 'them', text: 'Welcome! Want to video call?', time: '10:32 AM' },
-  { id: 4, sender: 'me', text: 'Sure, give me a sec', time: '10:33 AM' },
-  { id: 5, sender: 'them', text: 'That was so fun! Let\'s call again 🎉', time: '10:35 AM' },
-];
-
 export default function ChatPage() {
   const [activeChat, setActiveChat] = useState<number | null>(1);
   const [message, setMessage] = useState('');
@@ -34,11 +18,18 @@ export default function ChatPage() {
     { id: 4, name: 'Alex', avatar: 'A', lastMsg: 'Nice meeting you!', time: '2h', online: true, unread: 0 },
     { id: 5, name: 'Luna', avatar: 'L', lastMsg: 'Haha good one 😂', time: '3h', online: false, unread: 0 },
   ]);
+  const [messages, setMessages] = useState([
+    { id: 1, sender: 'them' as const, text: 'Hey! How are you?', time: '10:30 AM' },
+    { id: 2, sender: 'me' as const, text: 'I\'m great! Just joined ChatVibe', time: '10:31 AM' },
+    { id: 3, sender: 'them' as const, text: 'Welcome! Want to video call?', time: '10:32 AM' },
+    { id: 4, sender: 'me' as const, text: 'Sure, give me a sec', time: '10:33 AM' },
+    { id: 5, sender: 'them' as const, text: 'That was so fun! Let\'s call again 🎉', time: '10:35 AM' },
+  ]);
 
   const sendMessage = () => {
     if (!message.trim() || !activeChat) return;
     const newMsg = { id: Date.now(), sender: 'me' as const, text: message, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-    messages.push(newMsg);
+    setMessages(prev => [...prev, newMsg]);
     setConversations(prev => prev.map(c => c.id === activeChat ? { ...c, lastMsg: message, time: 'now', unread: 0 } : c));
     setMessage('');
   };

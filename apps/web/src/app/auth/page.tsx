@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '@/store/auth-store';
 import { supabase } from '@/lib/supabase';
 import {
   Envelope, Lock, User, Eye, EyeSlash, GoogleLogo,
-  AppleLogo, GithubLogo, Sparkle, ArrowRight, CheckCircle
+  AppleLogo, GithubLogo, FacebookLogo, InstagramLogo,
+  Sparkle, ArrowRight, CheckCircle
 } from '@phosphor-icons/react';
 
 export default function AuthPage() {
@@ -157,20 +158,27 @@ export default function AuthPage() {
           </div>
 
           {/* Social Buttons */}
-          <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="grid grid-cols-5 gap-2 mb-6">
             {[
               { icon: GoogleLogo, label: 'Google', provider: 'google' as const },
-              { icon: AppleLogo, label: 'Apple', provider: 'apple' as const },
               { icon: GithubLogo, label: 'GitHub', provider: 'github' as const },
+              { icon: FacebookLogo, label: 'Facebook', provider: 'facebook' as const },
+              { icon: InstagramLogo, label: 'Instagram', provider: 'instagram' as const },
+              { icon: AppleLogo, label: 'Apple', provider: 'apple' as const },
             ].map((s) => {
               const Icon = s.icon;
               return (
                 <button
                   key={s.label}
-                  onClick={() => supabase.auth.signInWithOAuth({ provider: s.provider })}
-                  className="flex items-center justify-center gap-2 py-3 rounded-xl glass hover:bg-white/10 transition-all text-sm font-medium"
+                  onClick={() => supabase.auth.signInWithOAuth({
+                    provider: s.provider,
+                    options: { redirectTo: `${window.location.origin}/auth/callback` }
+                  })}
+                  className="flex flex-col items-center gap-1 py-3 rounded-xl glass hover:bg-white/10 transition-all text-sm font-medium"
+                  title={s.label}
                 >
                   <Icon className="w-5 h-5" weight="fill" />
+                  <span className="text-[10px] text-text-muted">{s.label}</span>
                 </button>
               );
             })}

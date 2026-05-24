@@ -1,19 +1,14 @@
 {
   "installCommand": "pnpm install --no-frozen-lockfile",
   "nodeVersion": "20.x",
-  "framework": "monorepo",
-  "buildCommand": "pnpm build",
+  "framework": "nextjs",
+  "buildCommand": "cd apps/web && NODE_OPTIONS='--max_old_space_size=3072' npx next build",
   "outputDirectory": "apps/web/.next",
-  "experimentalServices": {
-    "web": {
-      "framework": "nextjs",
-      "entrypoint": "apps/web",
-      "routePrefix": "/"
-    },
-    "admin": {
-      "framework": "nextjs",
-      "entrypoint": "apps/admin",
-      "routePrefix": "/admin"
-    }
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://vibechat-api.run.app/api/v1",
+    "NEXT_PUBLIC_SOCKET_URL": "https://vibechat-socket.run.app",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://lyprfdnhcrrumyxqbshd.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_BkHBSLfW3DOAM6q8wk_Bow_paNwEG43",
+    "NEXT_PUBLIC_AGORA_APP_ID": "247da23abe3c4910b78239cc54b91e90"
   }
 }

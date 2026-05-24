@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Query, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Query, Body, UseGuards, Req, Headers } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -50,14 +50,20 @@ export class PaymentController {
 
   @Post('stripe-webhook')
   @ApiOperation({ summary: 'Stripe webhook handler' })
-  async stripeWebhook(@Body() body: any) {
-    return this.paymentService.handleStripeWebhook(body);
+  async stripeWebhook(
+    @Req() req: any,
+    @Headers('stripe-signature') signature: string,
+  ) {
+    return this.paymentService.handleStripeWebhook(req.body, signature);
   }
 
   @Post('razorpay-webhook')
   @ApiOperation({ summary: 'Razorpay webhook handler' })
-  async razorpayWebhook(@Body() body: any) {
-    return this.paymentService.handleRazorpayWebhook(body);
+  async razorpayWebhook(
+    @Req() req: any,
+    @Headers('x-razorpay-signature') signature: string,
+  ) {
+    return this.paymentService.handleRazorpayWebhook(req.body, signature);
   }
 
   @Get('transactions')

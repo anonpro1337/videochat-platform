@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../../config/prisma.service';
 import Stripe from 'stripe';
 import Razorpay from 'razorpay';
@@ -50,40 +50,71 @@ export class PaymentService {
     }
   }
 
-  async handleStripeWebhook(event: Stripe.Event) {
-    if (event.type === 'payment_intent.succeeded') {
-      const pi = event.data.object as Stripe.PaymentIntent;
-      const userId = pi.metadata.userId;
-      const amount = pi.amount / 100;
-      const currency = pi.currency;
+  async handleStripeWebhook(body: any, signature?: string) {
+    if (!config.stripe.webhookSecret) {
+      throw new Error('Stripe webhook secret not configured');
+    }
 
-      await this.prisma.payment.create({
-        data: {
-          userId,
-          provider: 'STRIPE',
-          providerPaymentId: pi.id,
-          type: 'PURCHASE',
-          amount,
-          currency: currency.toUpperCase(),
-          status: 'COMPLETED',
-          coins: Math.floor(amount * 10),
-        },
-      });
+    if (!signature) {
+      throw new UnauthorizedException('Missing Stripe signature');
+    }
 
-      // Credit coins
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: { coins: { increment: Math.floor(amount * 10) } },
-      });
+    try {
+      const event = this.stripe.webhooks.constructEvent(
+        typeof body === 'string' ? body : JSON.stringify(body),
+        signature,
+        config.stripe.webhookSecret,
+      );
+
+      if (event.type === 'payment_intent.succeeded') {
+        const pi = event.data.object as Stripe.PaymentIntent;
+        const userId = pi.metadata.userId;
+        const amount = pi.amount / 100;
+        const currency = pi.currency;
+
+        await this.prisma.payment.create({
+          data: {
+            userId,
+            provider: 'STRIPE',
+            providerPaymentId: pi.id,
+            type: 'PURCHASE',
+            amount,
+            currency: currency.toUpperCase(),
+            status: 'COMPLETED',
+            coins: Math.floor(amount * 10),
+          },
+        });
+
+        await this.prisma.user.update({
+          where: { id: userId },
+          data: { coins: { increment: Math.floor(amount * 10) } },
+        });
+      }
+
+      return { received: true };
+    } catch (err: any) {
+      throw new UnauthorizedException(`Stripe webhook verification failed: ${err.message}`);
     }
   }
 
-  async handleRazorpayWebhook(body: any) {
-    // Verify signature and process payment
-    const payment = body.payload.payment.entity;
-    const userId = payment.notes?.userId;
+  async handleRazorpayWebhook(body: any, signature?: string) {
+    if (!signature) {
+      throw new UnauthorizedException('Missing Razorpay signature');
+    }
 
-    if (payment.status === 'captured' && userId) {
+    const expectedSig = require('crypto')
+      .createHmac('sha256', config.razorpay.keySecret)
+      .update(JSON.stringify(body))
+      .digest('hex');
+
+    if (signature !== expectedSig) {
+      throw new UnauthorizedException('Invalid Razorpay signature');
+    }
+
+    const payment = body.payload?.payment?.entity;
+    const userId = payment?.notes?.userId;
+
+    if (payment?.status === 'captured' && userId) {
       const amount = payment.amount / 100;
       await this.prisma.payment.create({
         data: {
@@ -103,6 +134,8 @@ export class PaymentService {
         data: { coins: { increment: Math.floor(amount * 10) } },
       });
     }
+
+    return { received: true };
   }
 
   async getCoinPackages() {

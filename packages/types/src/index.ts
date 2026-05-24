@@ -10,7 +10,7 @@ export type AccountTier = 'free' | 'premium' | 'vip';
 
 export interface IUser {
   id: string;
-  firebaseUid: string;
+  supabaseUid: string;
   email?: string;
   phone?: string;
   displayName: string;

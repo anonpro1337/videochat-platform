@@ -110,10 +110,46 @@ export class AuthService {
       throw new UnauthorizedException('Provide either supabaseToken or email/password');
     }
 
-    const user = await this.prisma.user.findUnique({
+    let user = await this.prisma.user.findUnique({
       where: { supabaseUid },
       include: { profile: true, settings: true },
     });
+
+    if (!user && dto.supabaseToken) {
+      const { data: { user: supabaseUser } } = await this.supabase.admin.auth.getUser(dto.supabaseToken);
+      const email = dto.email || supabaseUser?.email || undefined;
+      const displayName = supabaseUser?.user_metadata?.full_name || supabaseUser?.user_metadata?.name || supabaseUser?.email?.split('@')[0] || 'User';
+      const avatar = supabaseUser?.user_metadata?.avatar_url || supabaseUser?.user_metadata?.picture;
+      const username = (supabaseUser?.email?.split('@')[0] || 'user') + '_' + Math.random().toString(36).slice(2, 6);
+
+      user = await this.prisma.user.create({
+        data: {
+          supabaseUid,
+          email,
+          displayName,
+          username,
+          avatar,
+          deviceId: dto.deviceId,
+          profile: {
+            create: {
+              interests: [],
+              languages: [],
+              photos: [],
+              videos: [],
+              vibeTags: [],
+              socialLinks: {},
+            },
+          },
+          settings: { create: {} },
+        },
+        include: { profile: true, settings: true },
+      });
+
+      const tokens = await this.generateTokens(user);
+      await this.storeRefreshToken(user.id, tokens.refreshToken);
+
+      return { user, ...tokens, isNewUser: true };
+    }
 
     if (!user) {
       throw new UnauthorizedException('User not found. Please register first.');
