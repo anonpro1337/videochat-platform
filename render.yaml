@@ -4,7 +4,7 @@ services:
     runtime: node
     repo: https://github.com/anonpro1337/videochat-platform
     branch: main
-    buildCommand: pnpm install --no-frozen-lockfile && pnpm --filter @videochat/api exec prisma generate && pnpm --filter @videochat/api build
+    buildCommand: NODE_ENV=development pnpm install --no-frozen-lockfile && NODE_ENV=development pnpm --filter @videochat/api exec prisma generate && NODE_ENV=development pnpm --filter @videochat/api build
     startCommand: node apps/api/dist/main
     healthCheckPath: /api/v1/health
     envVars:
