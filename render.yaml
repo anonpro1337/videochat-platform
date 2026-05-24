@@ -4,7 +4,6 @@ services:
     runtime: node
     repo: https://github.com/anonpro1337/videochat-platform
     branch: main
-    rootDir: ''
     buildCommand: NODE_ENV=development npm install -g pnpm@9 && NODE_ENV=development pnpm install --no-frozen-lockfile && pnpm --filter @videochat/api build
     startCommand: node apps/api/dist/main
     healthCheckPath: /api/v1/health
