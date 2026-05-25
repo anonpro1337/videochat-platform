@@ -1,3 +1,0 @@
-{
-  "installCommand": "NODE_ENV=development pnpm install --no-frozen-lockfile"
-}
