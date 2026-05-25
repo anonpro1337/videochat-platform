@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:vercel": "next build --distDir ../../.next",
     "start": "next start",
     "lint": "next lint"
   },
