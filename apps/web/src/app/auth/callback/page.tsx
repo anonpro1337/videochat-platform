@@ -1,13 +1,21 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
-export default function AuthCallbackPage() {
+function AuthCallbackInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
+    const error = searchParams.get('error');
+    const errorDescription = searchParams.get('error_description');
+    if (error) {
+      router.push(`/auth?error=${encodeURIComponent(errorDescription || error)}`);
+      return;
+    }
+
     const handleCallback = async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error || !session) {
@@ -22,11 +30,18 @@ export default function AuthCallbackPage() {
       }).catch(() => router.push(fallback));
     };
     handleCallback();
-  }, [router]);
+  }, [router, searchParams]);
 
+  return null;
+}
+
+export default function AuthCallbackPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <Suspense fallback={null}>
+        <AuthCallbackInner />
+      </Suspense>
     </div>
   );
 }

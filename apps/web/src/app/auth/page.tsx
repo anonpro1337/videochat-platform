@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/store/auth-store';
 import { supabase } from '@/lib/supabase';
@@ -11,13 +11,19 @@ import {
   Sparkle, ArrowRight, CheckCircle
 } from '@phosphor-icons/react';
 
-export default function AuthPage() {
+function AuthForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { register, login, guestLogin, isLoading, error, message } = useAuthStore();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [form, setForm] = useState({ email: '', password: '', displayName: '' });
   const [showPw, setShowPw] = useState(false);
   const [guestLoading, setGuestLoading] = useState(false);
+
+  useEffect(() => {
+    const err = searchParams.get('error');
+    if (err) useAuthStore.setState({ error: decodeURIComponent(err) });
+  }, [searchParams]);
 
   const toggleMode = () => setMode(m => m === 'login' ? 'register' : 'login');
 
@@ -195,10 +201,19 @@ export default function AuthPage() {
               return (
                 <button
                   key={s.label}
-                  onClick={() => supabase.auth.signInWithOAuth({
-                    provider: s.provider,
-                    options: { redirectTo: `${window.location.origin}/auth/callback` }
-                  })}
+                  onClick={async () => {
+                    try {
+                      const { error } = await supabase.auth.signInWithOAuth({
+                        provider: s.provider,
+                        options: { redirectTo: `${window.location.origin}/auth/callback` }
+                      });
+                      if (error) {
+                        useAuthStore.setState({ error: `${s.label} login failed: ${error.message}` });
+                      }
+                    } catch (err: any) {
+                      useAuthStore.setState({ error: `${s.label} login failed: ${err?.message || 'Unknown error'}` });
+                    }
+                  }}
                   className="flex flex-col items-center gap-1 py-3 rounded-xl glass hover:bg-white/10 transition-all text-sm font-medium"
                   title={s.label}
                 >
@@ -236,5 +251,13 @@ export default function AuthPage() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthForm />
+    </Suspense>
   );
 }
