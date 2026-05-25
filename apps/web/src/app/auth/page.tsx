@@ -13,7 +13,7 @@ import {
 
 export default function AuthPage() {
   const router = useRouter();
-  const { register, login, guestLogin, isLoading, error } = useAuthStore();
+  const { register, login, guestLogin, isLoading, error, message } = useAuthStore();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [form, setForm] = useState({ email: '', password: '', displayName: '' });
   const [showPw, setShowPw] = useState(false);
@@ -31,13 +31,20 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (mode === 'register') {
+      if (!form.displayName.trim()) return;
+      if (form.password.length < 6) {
+        useAuthStore.setState({ error: 'Password must be at least 6 characters.' });
+        return;
+      }
+    }
     if (mode === 'login') {
       await login(form.email, form.password);
     } else {
       await register(form.email, form.password, form.displayName);
     }
-    const currentError = useAuthStore.getState().error;
-    if (!currentError) redirectAfterAuth();
+    const s = useAuthStore.getState();
+    if (!s.error && s.isAuthenticated) redirectAfterAuth();
   };
 
   const handleGuest = async () => {
@@ -84,6 +91,16 @@ export default function AuthPage() {
               className="bg-destructive/10 border border-destructive/20 text-destructive text-sm px-4 py-3 rounded-xl mb-5"
             >
               {error}
+            </motion.div>
+          )}
+
+          {message && !error && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-sm px-4 py-3 rounded-xl mb-5"
+            >
+              {message}
             </motion.div>
           )}
 

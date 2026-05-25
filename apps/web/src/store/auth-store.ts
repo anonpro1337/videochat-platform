@@ -26,6 +26,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  message: string | null;
   initialized: boolean;
   login: (email: string, password: string) => Promise<void>;
   guestLogin: () => Promise<void>;
@@ -60,6 +61,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      message: null,
       initialized: false,
 
       initialize: async () => {
@@ -80,7 +82,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       login: async (email, password) => {
-        set({ isLoading: true, error: null });
+        set({ isLoading: true, error: null, message: null });
         try {
           const { data: { session }, error } = await supabase.auth.signInWithPassword({ email, password });
           if (error) throw new Error(error.message);
@@ -92,19 +94,19 @@ export const useAuthStore = create<AuthState>()(
       },
 
       guestLogin: async () => {
-        set({ isLoading: true, error: null });
+        set({ isLoading: true, error: null, message: null });
         try {
           const { data: { session }, error } = await supabase.auth.signInAnonymously();
           if (error) throw new Error(error.message);
           if (!session?.user) throw new Error('No session returned');
           set({ user: mapSupabaseUser(session.user), isAuthenticated: true, isLoading: false });
         } catch (err: any) {
-          set({ error: err.message || 'Guest login failed', isLoading: false });
+          set({ error: err.message || 'Guest login failed. Enable anonymous sign-ins in Supabase dashboard.', isLoading: false });
         }
       },
 
       register: async (email, password, displayName) => {
-        set({ isLoading: true, error: null });
+        set({ isLoading: true, error: null, message: null });
         try {
           const { data: { session }, error } = await supabase.auth.signUp({
             email,
@@ -115,7 +117,7 @@ export const useAuthStore = create<AuthState>()(
           if (session?.user) {
             set({ user: mapSupabaseUser(session.user), isAuthenticated: true, isLoading: false });
           } else {
-            set({ isLoading: false, error: 'Check your email for confirmation link.' });
+            set({ isLoading: false, message: 'Account created! Check your email for a confirmation link to sign in.' });
           }
         } catch (err: any) {
           set({ error: err.message || 'Registration failed', isLoading: false });
