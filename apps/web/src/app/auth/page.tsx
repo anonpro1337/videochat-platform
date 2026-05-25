@@ -171,7 +171,7 @@ export default function AuthPage() {
               { icon: GoogleLogo, label: 'Google', provider: 'google' as const },
               { icon: GithubLogo, label: 'GitHub', provider: 'github' as const },
               { icon: FacebookLogo, label: 'Facebook', provider: 'facebook' as const },
-              { icon: InstagramLogo, label: 'Instagram', provider: 'instagram' as const },
+              { icon: InstagramLogo, label: 'Instagram', provider: 'instagram' as any },
               { icon: AppleLogo, label: 'Apple', provider: 'apple' as const },
             ].map((s) => {
               const Icon = s.icon;
