@@ -4,6 +4,7 @@ import '@/styles/globals.css';
 import { Providers } from '@/components/layout/Providers';
 import { ThemeProvider } from '@/components/layout/ThemeProvider';
 import { Navbar } from '@/components/layout/Navbar';
+import { AuthInit } from '@/components/layout/AuthInit';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} antialiased min-h-screen bg-bg-primary text-text-primary`}>
         <ThemeProvider>
           <Providers>
+            <AuthInit />
             <Navbar />
             <main className="pt-16 pb-20 md:pb-0">{children}</main>
           </Providers>

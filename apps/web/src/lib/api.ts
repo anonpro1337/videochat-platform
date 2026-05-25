@@ -29,22 +29,11 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (refreshToken && !error.config._retry) {
+      if (!error.config._retry) {
         error.config._retry = true;
-        try {
-          const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
-          localStorage.setItem('accessToken', data.data.accessToken);
-          localStorage.setItem('refreshToken', data.data.refreshToken);
-          error.config.headers.Authorization = `Bearer ${data.data.accessToken}`;
-          return api(error.config);
-        } catch {
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          window.location.href = '/auth';
-        }
+        window.location.href = '/auth';
       }
     }
     return Promise.reject(error);
