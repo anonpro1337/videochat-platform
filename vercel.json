@@ -1,5 +1,8 @@
 {
   "installCommand": "NODE_ENV=development pnpm install --no-frozen-lockfile",
   "buildCommand": "cd apps/api && npx prisma generate && pnpm --filter @videochat/api run build",
-  "outputDirectory": "public"
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" }
+  ]
 }
