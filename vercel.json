@@ -1,5 +1,4 @@
 {
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "framework": "nextjs",
-  "buildCommand": "pnpm build"
+  "installCommand": "NODE_ENV=development pnpm install --no-frozen-lockfile",
+  "buildCommand": "cd apps/api && npx prisma generate && pnpm --filter @videochat/api run build"
 }

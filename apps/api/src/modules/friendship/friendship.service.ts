@@ -109,7 +109,7 @@ export class FriendshipService {
       },
     });
 
-    return friendships.map((f) => ({
+    return friendships.map((f: any) => ({
       id: f.id,
       friend: f.requesterId === userId ? f.addressee : f.requester,
       since: f.createdAt,
