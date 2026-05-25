@@ -21,6 +21,14 @@ export default function AuthPage() {
 
   const toggleMode = () => setMode(m => m === 'login' ? 'register' : 'login');
 
+  const redirectAfterAuth = () => {
+    const fallback = '/explore';
+    navigator.mediaDevices?.enumerateDevices().then(devices => {
+      const hasCamera = devices.some(d => d.kind === 'videoinput');
+      router.push(hasCamera ? '/video' : '/chat');
+    }).catch(() => router.push(fallback));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (mode === 'login') {
@@ -29,7 +37,7 @@ export default function AuthPage() {
       await register(form.email, form.password, form.displayName);
     }
     const currentError = useAuthStore.getState().error;
-    if (!currentError) router.push('/video');
+    if (!currentError) redirectAfterAuth();
   };
 
   const handleGuest = async () => {
@@ -37,7 +45,7 @@ export default function AuthPage() {
     await guestLogin();
     setGuestLoading(false);
     const currentError = useAuthStore.getState().error;
-    if (!currentError) router.push('/video');
+    if (!currentError) redirectAfterAuth();
   };
 
   return (
@@ -79,7 +87,7 @@ export default function AuthPage() {
             </motion.div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {mode === 'register' && (
               <div>
                 <label className="text-xs font-medium text-text-secondary mb-1.5 block">Display Name</label>
@@ -163,7 +171,7 @@ export default function AuthPage() {
               { icon: GoogleLogo, label: 'Google', provider: 'google' as const },
               { icon: GithubLogo, label: 'GitHub', provider: 'github' as const },
               { icon: FacebookLogo, label: 'Facebook', provider: 'facebook' as const },
-              { icon: InstagramLogo, label: 'Instagram', provider: 'instagram' as any },
+              { icon: InstagramLogo, label: 'Instagram', provider: 'instagram' as const },
               { icon: AppleLogo, label: 'Apple', provider: 'apple' as const },
             ].map((s) => {
               const Icon = s.icon;

@@ -27,7 +27,17 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            try {
+              var t = JSON.parse(localStorage.getItem('chatvibe-theme') || '{}');
+              document.documentElement.className = (t && t.state && t.state.theme) || 'dark';
+            } catch(e) { document.documentElement.className = 'dark'; }
+          `
+        }} />
+      </head>
       <body className={`${inter.variable} antialiased min-h-screen bg-bg-primary text-text-primary`}>
         <ThemeProvider>
           <Providers>

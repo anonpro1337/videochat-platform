@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { api } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
+import { getDeviceId } from '@/lib/device';
 
 interface User {
   id: string;
@@ -48,7 +49,7 @@ export const useAuthStore = create<AuthState>()(
           const { data: supabaseData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
           if (authError) throw new Error(authError.message);
           const supabaseToken = supabaseData.session?.access_token;
-          const { data } = await api.post('/auth/login', { supabaseToken, email, deviceId: localStorage.getItem('deviceId') });
+          const { data } = await api.post('/auth/login', { supabaseToken, email, deviceId: getDeviceId() });
           localStorage.setItem('accessToken', data.data.accessToken);
           localStorage.setItem('refreshToken', data.data.refreshToken);
           set({ user: data.data.user, isAuthenticated: true, isLoading: false });
@@ -61,7 +62,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         try {
           const { data: { session } } = await supabase.auth.signInAnonymously();
-          const { data } = await api.post('/auth/guest', { deviceId: localStorage.getItem('deviceId') });
+          const { data } = await api.post('/auth/guest', { deviceId: getDeviceId() });
           localStorage.setItem('accessToken', data.data.accessToken);
           localStorage.setItem('refreshToken', data.data.refreshToken);
           set({ user: data.data.user, isAuthenticated: true, isLoading: false });
@@ -86,7 +87,7 @@ export const useAuthStore = create<AuthState>()(
             email,
             displayName,
             username,
-            deviceId: localStorage.getItem('deviceId'),
+            deviceId: getDeviceId(),
           });
           localStorage.setItem('accessToken', data.data.accessToken);
           localStorage.setItem('refreshToken', data.data.refreshToken);
@@ -116,7 +117,17 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      partialize: (state) => ({
+        isAuthenticated: state.isAuthenticated,
+        user: state.user ? {
+          id: state.user.id,
+          displayName: state.user.displayName,
+          username: state.user.username,
+          avatar: state.user.avatar,
+          role: state.user.role,
+          tier: state.user.tier,
+        } : null,
+      }),
     },
   ),
 );

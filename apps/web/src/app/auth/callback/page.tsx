@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/auth-store';
+import { getDeviceId } from '@/lib/device';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -20,14 +21,18 @@ export default function AuthCallbackPage() {
 
       const supabaseToken = session.access_token;
       const email = session.user?.email || '';
-      const deviceId = localStorage.getItem('deviceId') || '';
+      const deviceId = getDeviceId();
 
       try {
         const { data } = await api.post('/auth/login', { supabaseToken, email, deviceId });
         localStorage.setItem('accessToken', data.data.accessToken);
         localStorage.setItem('refreshToken', data.data.refreshToken);
         setUser(data.data.user);
-        router.push('/video');
+        const fallback = '/explore';
+        navigator.mediaDevices?.enumerateDevices().then(devices => {
+          const hasCamera = devices.some(d => d.kind === 'videoinput');
+          router.push(hasCamera ? '/video' : '/chat');
+        }).catch(() => router.push(fallback));
       } catch {
         router.push('/auth?error=login_failed');
       }

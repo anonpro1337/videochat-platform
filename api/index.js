@@ -55,11 +55,14 @@ async function handler(req, res) {
     });
   } else {
     json({
-      name: 'VideoChat Platform API',
-      version: '1.0.0',
-      status: 'running',
-      environment: process.env.NODE_ENV || 'development',
-    });
+      error: 'Not Found',
+      message: `Route ${method} ${url} not found`,
+      availableEndpoints: {
+        health: '/api/v1/health',
+        docs: '/api/docs',
+        apiRoot: '/api/v1',
+      },
+    }, 404);
   }
 }
 

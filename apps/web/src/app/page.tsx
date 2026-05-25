@@ -62,8 +62,20 @@ export default function HomePage() {
 
   const handleGuest = async () => {
     setGuestLoading(true);
-    await guestLogin();
+    try {
+      await guestLogin();
+      const err = useAuthStore.getState().error;
+      if (err) throw new Error(err);
+    } catch (e) {
+      setGuestLoading(false);
+      return;
+    }
     setGuestLoading(false);
+    const fallback = '/explore';
+    navigator.mediaDevices?.enumerateDevices().then(devices => {
+      const hasCamera = devices.some(d => d.kind === 'videoinput');
+      window.location.href = hasCamera ? '/video' : '/chat';
+    }).catch(() => { window.location.href = fallback; });
   };
 
   return (

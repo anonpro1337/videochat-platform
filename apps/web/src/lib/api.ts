@@ -2,7 +2,14 @@
 
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+const PRODUCTION_API_URL = 'https://api-tau-dusky-58.vercel.app/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || PRODUCTION_API_URL;
+
+if (typeof window !== 'undefined' && !process.env.NEXT_PUBLIC_API_URL) {
+  console.warn(
+    `NEXT_PUBLIC_API_URL not set. Using default: ${PRODUCTION_API_URL}`
+  );
+}
 
 export const api = axios.create({
   baseURL: API_URL,
