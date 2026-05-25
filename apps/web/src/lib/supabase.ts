@@ -1,16 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-function getEnvVar(name: string): string {
-  const val = process.env[name];
-  if (!val) {
-    throw new Error(
-      `Missing required environment variable: ${name}. Check your .env file or Vercel project settings.`
-    );
-  }
-  return val;
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-const supabaseUrl = getEnvVar('NEXT_PUBLIC_SUPABASE_URL');
-const supabaseAnonKey = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Missing required environment variable(s): NEXT_PUBLIC_SUPABASE_URL and/or NEXT_PUBLIC_SUPABASE_ANON_KEY. Check your .env file or Vercel project settings.'
+  );
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
